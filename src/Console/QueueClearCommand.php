@@ -75,6 +75,7 @@ class QueueClearCommand extends Command {
 		$this->info(sprintf('Clearing queue "%s" on "%s"', $queue, $connection));
 		$cleared = $this->clearer->clear($connection, $queue);
 		$this->info(sprintf('Cleared %d jobs', $cleared));
+		$this->info(sprintf('Release back %d jobs', $this->clearer->releaseBack));
 	}
 
 }

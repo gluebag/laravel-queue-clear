@@ -11,6 +11,8 @@ class Clearer implements ClearerContract
      */
     protected $manager;
 
+    public $releaseBack = 0;
+
     /**
      * {@inheritDoc}
      */
@@ -28,8 +30,8 @@ class Clearer implements ClearerContract
         $connection = $this->manager->connection($connection);
 
         $count += $this->clearJobs($connection, $queue);
-        $count += $this->clearJobs($connection, $queue . ':reserved');
-        $count += $this->clearDelayedJobs($connection, $queue);
+//        $count += $this->clearJobs($connection, $queue . ':reserved');
+//        $count += $this->clearDelayedJobs($connection, $queue);
 
         return $count;
     }
@@ -40,11 +42,19 @@ class Clearer implements ClearerContract
 
         while ($job = $connection->pop($queue)) {
 
-            var_dump($job->resolveName());
-            exit();
-
-            $job->delete();
-            $count++;
+            // If ignorable jobs, just delete
+            if(in_array($job->resolveName(), [
+                'App\Jobs\SyncRingbaCall',
+                'App\Jobs\SyncTrackdriveCall',
+            ])) {
+                $job->delete();
+                $count++;
+            }
+            else {
+                // Requeue it back so it gets processed...
+                $job->release();
+                $this->releaseBack++;
+            }
         }
 
         return $count;
