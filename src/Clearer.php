@@ -49,11 +49,17 @@ class Clearer implements ClearerContract
             ])) {
                 $job->delete();
                 $count++;
+                if($count % 5000 === 0) {
+                    print('cleared: '.$count);
+                }
             }
             else {
                 // Requeue it back so it gets processed...
                 $job->release();
                 $this->releaseBack++;
+                if($this->releaseBack % 5000 === 0) {
+                    print('re-queued: '.$this->releaseBack);
+                }
             }
         }
 
