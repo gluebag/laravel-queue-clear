@@ -39,6 +39,10 @@ class Clearer implements ClearerContract
         $count = 0;
 
         while ($job = $connection->pop($queue)) {
+
+            var_dump($job);
+            exit();
+
             $job->delete();
             $count++;
         }
