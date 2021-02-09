@@ -40,7 +40,7 @@ class Clearer implements ClearerContract
 
         while ($job = $connection->pop($queue)) {
 
-            var_dump($job);
+            var_dump($job->resolveName());
             exit();
 
             $job->delete();
